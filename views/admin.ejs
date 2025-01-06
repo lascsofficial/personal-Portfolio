@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio - Admin</title>
+    <link rel="stylesheet" href="/admin.css" />
+</head>
+
+<body>
+    <!-- Header / Navbar -->
+    <header>
+        <nav>
+            <div>
+                <a href="#">Liaqat Ali</a>
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#blog">Blog</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="/">Home</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Skills Section -->
+        <section id="skills">
+            <h2>Skills Section</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Skill</th>
+                        <th>Level</th>
+                        <th>Category</th>
+                        <th>Image</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% skills.forEach(skill => { %>
+                    <tr>
+                        <td><%= skill.skill %></td>
+                        <td><%= skill.level %></td>
+                        <td><%= skill.category ? skill.category.name : "N/A" %></td>
+                        <td>
+                            <% if (skill.image) { %>
+                            <img src="<%= skill.image %>" alt="Image of <%= skill.skill %>" width="100">
+                            <% } else { %>
+                            N/A
+                            <% } %>
+                        </td>
+                        <td>
+                            <form action="/admin/skills/delete" method="POST">
+                                <input type="hidden" name="id" value="<%= skill._id %>" />
+                                <button type="submit">Delete</button>
+                            </form>
+                            <button data-bs-toggle="modal" data-bs-target="#editSkillModal<%= skill._id %>" aria-label="Edit skill">Edit</button>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+
+            <!-- Add New Skill Form -->
+            <h3>Add New Skill</h3>
+            <form action="/admin/skills/add" method="POST" enctype="multipart/form-data">
+                <div>
+                    <label for="skillImageNew">Skill Image</label>
+                    <input type="file" id="skillImageNew" name="image" />
+                </div>
+                <div>
+                    <label for="skillTitleNew">Skill Name</label>
+                    <input type="text" id="skillTitleNew" name="skill" required />
+                </div>
+                <div>
+                    <label for="skillLevelNew">Skill Level</label>
+                    <input type="text" id="skillLevelNew" name="level" required />
+                </div>
+                <div>
+                    <label for="skillCategoryNew">Skill Category</label>
+                    <select id="skillCategoryNew" name="category" required>
+                        <% categories.forEach(category => { %>
+                        <option value="<%= category.name %>"><%= category.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <button type="submit">Add Skill</button>
+            </form>
+        </section>
+
+        <!-- Categories Section -->
+        <section id="categories">
+            <h2>Categories Section</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% categories.forEach(category => { %>
+                    <tr>
+                        <td><%= category.name %></td>
+                        <td>
+                            <form action="/admin/categories/delete" method="POST">
+                                <input type="hidden" name="id" value="<%= category._id %>" />
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+
+            <!-- Add New Category Form -->
+            <h3>Add New Category</h3>
+            <form action="/admin/categories/add" method="POST">
+                <div>
+                    <label for="categoryNameNew">Category Name</label>
+                    <input type="text" id="categoryNameNew" name="name" required />
+                </div>
+                <button type="submit">Add Category</button>
+            </form>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects">
+            <h2>Projects Section</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Image</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% projects.forEach(project => { %>
+                    <tr>
+                        <td><%= project.title %></td>
+                        <td><%= project.description %></td>
+                        <td>
+                            <% if (project.imageUrl) { %>
+                            <img src="<%= project.imageUrl %>" alt="Image of <%= project.title %>" width="100">
+                            <% } else { %>
+                            N/A
+                            <% } %>
+                        </td>
+                        <td>
+                            <form action="/admin/projects/delete" method="POST">
+                                <input type="hidden" name="id" value="<%= project._id %>" />
+                                <button type="submit">Delete</button>
+                            </form>
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#editModal-<%= project._id %>" aria-label="Edit project">Edit</button>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+
+            <!-- Add New Project Form -->
+            <h3>Add New Project</h3>
+            <form action="/admin/projects/add" method="POST" enctype="multipart/form-data">
+                <div>
+                    <label for="projectTitleNew">Project Title</label>
+                    <input type="text" id="projectTitleNew" name="title" required />
+                </div>
+                <div>
+                    <label for="projectDescriptionNew">Project Description</label>
+                    <textarea id="projectDescriptionNew" name="description" rows="3" required></textarea>
+                </div>
+                <div>
+                    <label for="projectImageNew">Project Image</label>
+                    <input type="file" id="projectImageNew" name="image" />
+                </div>
+                <button type="submit">Add Project</button>
+            </form>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section id="testimonials">
+            <h2>Testimonials</h2>
+            <ul>
+                <% testimonials.forEach(testimonial => { %>
+                <li>
+                    <strong><%= testimonial.name %></strong>
+                    <form action="/admin/testimonials/delete" method="POST">
+                        <input type="hidden" name="id" value="<%= testimonial._id %>" />
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+                <% }) %>
+            </ul>
+        </section>
+
+        <!-- Blog Section -->
+        <section id="blog">
+            <h2>Blog Posts</h2>
+            <ul>
+                <% blogPosts.forEach(post => { %>
+                <li>
+                    <strong><%= post.title %></strong>
+                    <form action="/admin/blog/delete" method="POST">
+                        <input type="hidden" name="id" value="<%= post._id %>" />
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+                <% }) %>
+            </ul>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Liaqat Ali. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
