@@ -1,0 +1,76 @@
+/* New Class for Skills Row */
+.skills-row {
+    display: flex; /* Align all skill cards in a horizontal row */
+    flex-wrap: nowrap; /* Prevent wrapping, keep all cards in one row */
+    overflow-x: auto; /* Add horizontal scrolling if there are too many cards */
+    gap: 20px; /* Adds space between the skill cards */
+    padding: 10px 0; /* Adds some vertical padding to the container */
+}
+
+/* Each skill card container inside the row */
+.skills-row .col-md-4 {
+    flex: 0 0 auto; /* Prevent cards from stretching */
+    width: 300px; /* Set a fixed width for each card */
+    box-sizing: border-box; /* Ensure padding and borders are included in the width */
+}
+
+/* Style for the card itself */
+.card {
+    width: 100%; /* Card will take up the full width available inside its column */
+    border-radius: 10px; /* Rounded corners for the card */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for card */
+    overflow: hidden; /* Ensure contents stay within the card boundary */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add smooth transitions */
+}
+
+/* Hover effect on card */
+.card:hover {
+    transform: translateY(-10px); /* Lift card on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+}
+
+/* Style for the image inside the card */
+.card-img-top {
+    width: 100%; /* Ensure image takes up the full width of the card */
+    height: auto; /* Maintain aspect ratio */
+    border-bottom: 1px solid #ddd; /* Optional border below the image */
+}
+
+/* Style for card body content */
+.card-body {
+    padding: 15px; /* Add padding for inner content */
+    background-color: #f9f9f9; /* Light background for the body */
+    height: 100%; /* Ensure the body takes up full height */
+}
+
+/* Style for the skill title inside the card */
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 10px; /* Adds some space below the title */
+}
+
+/* Style for paragraphs in card body */
+.card-body p {
+    margin: 5px 0; /* Space between skill details */
+    font-size: 0.95rem; /* Slightly smaller font for better readability */
+    color: #555; /* Slightly darker color for text */
+}
+
+/* Style for the level and category labels */
+.card-body strong {
+    color: #333; /* Darker color for labels */
+}
+
+/* Responsive behavior for smaller screens */
+@media (max-width: 1024px) {
+    .skills-row .col-md-4 {
+        width: 48%; /* On medium screens, reduce card width */
+    }
+}
+
+@media (max-width: 768px) {
+    .skills-row .col-md-4 {
+        width: 100%; /* On small screens, make cards full width */
+    }
+}

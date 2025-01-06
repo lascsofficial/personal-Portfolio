@@ -1,0 +1,28 @@
+<!-- Blog Section -->
+<section id="blog" class="card text-center py-5">
+    <div class="container">
+        <h2 class="section-heading title">My Blog</h2>
+        <div class="row">
+            <% if (posts && posts.length > 0) { %>
+                <% posts.forEach(post => { %>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img src="<%= post.imageUrl %>" class="card-img-top" alt="<%= post.title %>" />
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <%= post.title %>
+                                </h5>
+                                <p class="card-text">
+                                    <%= post.description %>
+                                </p>
+                                <a href="<%= post.contentUrl %>" class="btn btn-dark">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p>No posts available</p>
+            <% } %>
+        </div>
+    </div>
+</section>

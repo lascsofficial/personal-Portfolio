@@ -1,0 +1,22 @@
+<!-- Testimonials Section -->
+<section id="testimonials" class="card text-center py-5 bg-light" data-aos="fade-up">
+    <div class="container">
+        <h2 class="section-heading bg-light title">Testimonials</h2>
+        <div class="row">
+            <% if (testimonials.length > 0) { %>
+            <% testimonials.forEach(testimonial=>{%>
+                <div class="col-md-4" data-aos="fade-up">
+                    <blockquote>
+                        <p>
+                            <%testimonial.testimonial%>
+                        </p>
+                        <footer><%testimonial%></footer>
+                    </blockquote>
+                </div>
+            <%})}else{%>
+                <p> No testimonial available</p>
+                <%}%>
+            
+        </div>
+    </div>
+</section>

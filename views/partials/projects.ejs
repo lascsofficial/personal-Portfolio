@@ -1,0 +1,26 @@
+<!-- Projects Section -->
+<section id="projects" class="card text-center py-5 bg-light" data-aos="fade-up">
+    <div class="container">
+        <h2 class="section-heading title">My Projects</h2>
+        <div class="row">
+            <% if (projects.length > 0) { %> <!-- Check if there are projects -->
+                <% projects.forEach(project => { %>
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="<%= project.imageUrl %>" class="card-img-top" alt="<%= project.title %>" />
+                        <div class="card-body">
+                            <h5 class="card-title"><%= project.title %></h5>
+                            <p class="card-text">
+                                <%= project.description %>
+                            </p>
+                            <a href="<%= project.contentUrl %>" class="btn btn-dark">View Project</a>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+            <% } else { %>
+                <p>No projects available.</p>
+            <% } %>
+        </div>
+    </div>
+</section>

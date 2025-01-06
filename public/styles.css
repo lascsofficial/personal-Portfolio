@@ -1,0 +1,162 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    perspective: 1000px;
+    background-color: #C4DAD2;
+}
+
+/* Navbar */
+.navbar {
+    position: sticky;
+    top: 0;
+    height: 10%;
+    box-shadow: 0 10px 15px #3e587985;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+/* Title Section */
+.title {
+    position: relative;
+    top: 20px;
+    right: 50%;
+    transform: translate(50%, -50%);
+    text-transform: uppercase;
+    font-family: Verdana;
+    font-size: 5rem;
+    font-weight: 10;
+    color: #000;
+    text-shadow: 1px 1px 1px #919191,
+        1px 2px 1px #919191,
+        1px 3px 1px #919191,
+        1px 4px 1px #919191,
+        1px 5px 1px #919191,
+        1px 6px 1px #919191,
+        1px 7px 1px #919191,
+        1px 8px 1px #919191,
+        1px 9px 1px #919191,
+        1px 10px 1px #919191,
+        1px 18px 6px rgba(16, 16, 16, 0.4),
+        1px 22px 10px rgba(16, 16, 16, 0.2),
+        1px 25px 35px rgba(16, 16, 16, 0.2),
+        1px 30px 60px rgba(16, 16, 16, 0.4);
+}
+
+/* Main Content */
+main {
+    padding: 1% 1% 0 1%;
+}
+
+.section-heading {
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+/* About Section */
+#about img {
+    max-width: 100%;
+    height: 10rem;
+    border-radius: 50%;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 1s;
+}
+
+#about img:hover {
+    transform: rotateY(360deg);
+}
+
+/* Buttons */
+.btn-dark {
+    background: linear-gradient(90deg, #000, #434343);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: #fff;
+}
+
+.btn-dark:hover {
+    background: linear-gradient(90deg, #434343, #000);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+}
+
+.btn-dark:focus {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* Cards */
+.card {
+    transition: transform 0.5s;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+    margin-bottom: 5%;
+}
+
+.card img {
+    max-height: 300px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+
+.card-title {
+    font-weight: bolder;
+}
+
+.card-body {
+    width: auto;
+    height: 300px;
+}
+
+.card:hover {
+    transform: rotateY(15deg) scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.card-body li *{
+    display: inline;
+
+}
+
+.table img{
+    height: 50px;
+    width: 50px;
+}
+
+/* Footer */
+footer {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #111;
+    color: #ccc;
+    text-align: center;
+    border-top: 1px solid #555;
+}
+
+/* Active Links */
+.active {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 480px) {
+    .title {
+        font-size: 1.5rem;
+    }
+
+    main {
+        padding: 2%;
+    }
+
+    .card {
+        margin-bottom: 10%;
+        transform: none; /* Prevent hover effects on touch devices */
+    }
+
+    .section-heading {
+        font-size: 1.8rem;
+    }
+}
