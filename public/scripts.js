@@ -1,27 +1,13 @@
-AOS.init();
+const sidebar = document.getElementById('sidebar'); 
+const sidebarToggle = document.getElementById('sidebarToggle');
 
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
-    });
+// Adds a click event listener to the toggle button
+sidebarToggle.addEventListener('click', () => {
+    console.log('Sidebar toggled');
+    // Toggle display between 'block' and 'none'
+    if (sidebar.style.display === 'block') {
+        sidebar.style.display = 'none'; // Hides the sidebar
+    } else {
+        sidebar.style.display = 'block'; // Shows the sidebar
+    }
 });
-
-window.addEventListener('scroll', () => {
-    const sections = document.querySelectorAll('section');
-    const navLinks = document.querySelectorAll('.nav-link');
-
-    sections.forEach((section, index) => {
-        const top = section.offsetTop - 100;
-        const height = section.offsetHeight;
-        const scroll = window.pageYOffset;
-
-        if (scroll >= top && scroll < top + height) {
-            navLinks.forEach(link => link.classList.remove('active'));
-            navLinks[index].classList.add('active');
-        }
-    });
-});
-

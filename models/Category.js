@@ -1,19 +1,19 @@
-// models/Category.js
-
 const mongoose = require('mongoose');
 
 const categorySchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
+        unique: true, // Ensures no duplicate category names
+        trim: true,   // Removes extra spaces
     },
     description: {
         type: String,
-        required: false,
+        trim: true,   // Ensures clean input
     },
+}, {
+    timestamps: true, // Automatically adds `createdAt` and `updatedAt`
 });
 
-const Category = mongoose.model('Category', categorySchema);
-
-module.exports = Category;
+// Export the model
+module.exports = mongoose.model('Category', categorySchema);

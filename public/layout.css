@@ -1,0 +1,229 @@
+/* CSS Variables for easier maintenance */
+:root {
+    --primary-bg-color: rgb(1, 1, 19);
+    --primary-text-color: antiquewhite;
+    --link-color: aliceblue;
+    --hover-bg-color: aliceblue;
+    --active-bg-color: #a9a9a9;
+    --sidebar-width: 15vw;
+    --mobile-sidebar-width: 100vw;
+    --tablet-sidebar-width: 50vw;
+    --three-d: 
+        1px 1px 1px #919191,
+        1px 2px 1px #919191,
+        1px 3px 1px #919191,
+        1px 10px 10px rgba(16, 16, 16, 0.4);
+}
+
+/* Title Bar */
+.titleBar {
+    display: flex; 
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 10vh;
+    background-color: var(--primary-bg-color);
+    z-index: 100;
+    padding: 0 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.titleBarBtn {
+    display: none;
+    align-items: center;
+    border: none;
+    background-color: rgb(255, 255, 255);
+    width: 50px;
+    height: 50px;
+    align-content: center;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 2000; /* Ensure button is clickable above other content */
+}
+
+.title {
+    flex-grow: 1;
+    text-align: center;
+    color: var(--primary-text-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.account-section {
+    display: flex;
+    align-items: center;
+    position: relative;
+    right: 10px;
+}
+
+.userImg {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--primary-text-color);
+    transition: transform 0.3s ease;
+}
+
+.userImg:hover {
+    transform: scale(1.05);
+}
+
+.userImg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Sidebar */
+aside {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--primary-bg-color);
+    position: fixed;
+    top: 10vh;
+    left: 0;
+    bottom: 10vh;
+    width: var(--sidebar-width);
+    height: 80vh;
+    transition: width 0.3s ease;
+    z-index: 999;
+}
+
+/* Links Styling */
+.title a, .nav-links a {
+    display: block;
+    margin: 25px 0;
+    padding: 10px 3vw;
+    text-decoration: none;
+    color: var(--link-color);
+    transition: background-color 0.3s ease, font-size 0.3s ease;
+}
+
+.nav-links a:hover {
+    background-color: var(--hover-bg-color);
+    color: black;
+    font-size: large;
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.nav-links a:active {
+    background-color: var(--active-bg-color);
+    color: black;
+}
+
+/* Main Content */
+.mainContents {
+    position: relative;
+    margin-left: var(--sidebar-width);
+    padding: 10px;
+    top: 10vh;
+    height: 80vh;
+    background-color: rgb(247, 229, 209);
+    overflow-y: auto;
+}
+
+/* Section Headings */
+.section-heading {
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #000;
+    text-shadow: var(--three-d);
+}
+
+/* About Section */
+#about img {
+    max-width: 100%;
+    height: 10rem;
+    border-radius: 50%;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 1s;
+}
+
+#about img:hover {
+    transform: rotateY(360deg);
+}
+
+/* Buttons */
+.btn-dark {
+    background: linear-gradient(90deg, #000, #434343);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: #fff;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-dark:hover {
+    background: linear-gradient(90deg, #434343, #000);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Cards */
+.card {
+    transition: transform 0.5s, box-shadow 0.5s;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+    margin-bottom: 5%;
+}
+
+.card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Footer */
+.footer {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 100vw;
+    height: 10vh;
+    background-color: var(--primary-bg-color);
+    color: var(--primary-text-color);
+    text-align: center;
+    padding: 10px 0;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    aside {
+        width: var(--tablet-sidebar-width);
+    }
+    .title a, .nav-links a {
+        padding-left: 5vw;
+    }
+}
+
+@media (max-width: 480px) {
+    .titleBar {
+        width: 100vw;
+    }
+    .title{
+        font-size: medium;
+    }
+    .titleBarBtn {
+        display: inline-flex;
+        position: relative;
+    }
+
+    .titleBarBtn img{
+        width: 40px;
+        height: 40px;
+    }
+    aside {
+        width: 100vw;
+        display: none; /* Hide sidebar on small screens */
+    }
+    .mainContents {
+        margin-left: 0;
+        width: 100vw;
+    }
+    .footer {
+        width: 100vw;
+        font-size: small;
+    }
+}

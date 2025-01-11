@@ -1,5 +1,3 @@
-// routes/admin.js
-
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -11,42 +9,53 @@ const Skill = require('../models/Skill');
 const Project = require('../models/Project');
 const Testimonial = require('../models/Testimonial');
 const BlogPost = require('../models/BlogPost');
+const User = require('../models/User');
 
-// Set up Multer for file uploads
+// Multer Configuration for File Uploads
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'public/uploads/'); // Ensure this directory exists
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname)); // e.g., 1634239083940.jpg
-    },
+    destination: 'public/uploads/',
+    filename: (req, file, cb) => cb(null, `${Date.now()}${path.extname(file.originalname)}`),
 });
+const upload = multer({ storage });
 
-const upload = multer({ storage: storage });
-
-// Middleware to fetch categories for forms
+// Middleware to Fetch Categories for Forms
 const fetchCategories = async (req, res, next) => {
     try {
-        const categories = await Category.find({});
-        res.locals.categories = categories;
+        res.locals.categories = await Category.find({});
         next();
     } catch (error) {
         next(error);
     }
 };
 
+// Helper Functions
+const handleError = (res, error, redirectUrl = '/admin') => {
+    console.error('Error:', error);
+    res.redirect(redirectUrl);
+};
+
+const saveOrUpdateDocument = async (Model, filter, updateData, res, redirectUrl) => {
+    try {
+        await Model.findOneAndUpdate(filter, updateData, { upsert: true, new: true });
+        res.redirect(redirectUrl);
+    } catch (error) {
+        handleError(res, error, redirectUrl);
+    }
+};
+
 // Admin Dashboard Route
 router.get('/', async (req, res, next) => {
     try {
-        const aboutContent = "Your About Content Here"; // Fetch from DB or config
-        const projects = await Project.find({});
-        const skills = await Skill.find({}).populate('category'); // Populate category name
-        const testimonials = await Testimonial.find({});
-        const blogPosts = await BlogPost.find({});
-        const categories = await Category.find({});
+        const [projects, skills, testimonials, blogPosts, categories] = await Promise.all([
+            Project.find({}),
+            Skill.find({}).populate('category'),
+            Testimonial.find({}),
+            BlogPost.find({}),
+            Category.find({}),
+        ]);
 
         res.render('admin', {
-            aboutContent,
+            aboutContent: "Your About Content Here",
             projects,
             skills,
             testimonials,
@@ -61,321 +70,137 @@ router.get('/', async (req, res, next) => {
 /* =========================
    ABOUT SECTION ROUTES
    ========================= */
-
-// Update About Section
-router.post('/about', async (req, res, next) => {
-    try {
-        const { content } = req.body;
-        // Assuming you have an About model or store it in a config
-        // For simplicity, let's assume it's stored in a single document
-        let about = await About.findOne({});
-        if (!about) {
-            about = new About({ content });
-        } else {
-            about.content = content;
-        }
-        await about.save();
-        res.redirect('/admin');
-    } catch (error) {
-        next(error);
-    }
+router.post('/about', async (req, res) => {
+    const { content } = req.body;
+    saveOrUpdateDocument(
+        require('../models/About'),
+        {},
+        { content },
+        res,
+        '/admin'
+    );
 });
 
 /* =========================
    PROJECTS SECTION ROUTES
    ========================= */
+router.post('/projects/add', upload.single('image'), async (req, res) => {
+    const { title, description } = req.body;
+    const newProject = new Project({
+        title,
+        description,
+        imageUrl: req.file ? `/uploads/${req.file.filename}` : '',
+        contentUrl: '#', // Update as needed
+    });
 
-// Add New Project
-router.post('/projects/add', upload.single('image'), async (req, res, next) => {
     try {
-        const { title, description } = req.body;
-        let imageUrl = '';
-        if (req.file) {
-            imageUrl = `/uploads/${req.file.filename}`;
-        }
-        const newProject = new Project({
-            title,
-            description,
-            imageUrl,
-            contentUrl: '#', // Update as needed
-        });
         await newProject.save();
         res.redirect('/admin#projects');
     } catch (error) {
-        next(error);
+        handleError(res, error, '/admin#projects');
     }
 });
 
-// Edit Project
-router.post('/projects/edit/:id', upload.single('image'), async (req, res, next) => {
-    try {
-        const projectId = req.params.id;
-        const { title, description } = req.body;
-        const updateData = { title, description };
+router.post('/projects/edit/:id', upload.single('image'), async (req, res) => {
+    const { title, description } = req.body;
+    const updateData = {
+        title,
+        description,
+        imageUrl: req.file ? `/uploads/${req.file.filename}` : undefined,
+    };
 
-        if (req.file) {
-            updateData.imageUrl = `/uploads/${req.file.filename}`;
-        }
-
-        await Project.findByIdAndUpdate(projectId, updateData);
-        res.redirect('/admin#projects');
-    } catch (error) {
-        next(error);
-    }
+    saveOrUpdateDocument(Project, { _id: req.params.id }, updateData, res, '/admin#projects');
 });
 
-// Delete Project
-router.post('/projects/delete', async (req, res, next) => {
+router.post('/projects/delete', async (req, res) => {
     try {
-        const { id } = req.body;
-        await Project.findByIdAndDelete(id);
+        await Project.findByIdAndDelete(req.body.id);
         res.redirect('/admin#projects');
     } catch (error) {
-        next(error);
+        handleError(res, error, '/admin#projects');
     }
 });
 
 /* =========================
    SKILLS SECTION ROUTES
    ========================= */
+router.post('/skills/add', upload.single('image'), async (req, res) => {
+    const { skill, level, category } = req.body;
 
-// Add New Skill
-router.post('/skills/add', upload.single('image'), async (req, res, next) => {
     try {
-        const { skill, level, category } = req.body;
-        let categoryId;
-
-        // Find or create the category
-        const categoryDoc = await Category.findOne({ name: category });
-        if (categoryDoc) {
-            categoryId = categoryDoc._id;
-        } else {
-            const newCategory = new Category({ name: category });
-            const savedCategory = await newCategory.save();
-            categoryId = savedCategory._id;
-        }
-
-        let imageUrl = '';
-        if (req.file) {
-            imageUrl = `/uploads/${req.file.filename}`;
-        }
+        const categoryDoc = await Category.findOneAndUpdate(
+            { name: category },
+            { name: category },
+            { upsert: true, new: true }
+        );
 
         const newSkill = new Skill({
-            image: imageUrl,
             skill,
             level,
-            category: categoryId,
+            levelPercentage: { Beginner: 25, Intermediate: 50, Advanced: 75, Expert: 100 }[level] || 0,
+            category: categoryDoc._id,
+            image: req.file ? `/uploads/${req.file.filename}` : '',
         });
+
         await newSkill.save();
-        res.redirect('/admin#skill');
+        res.redirect('/admin#skills');
     } catch (error) {
-        next(error);
+        handleError(res, error, '/admin#skills');
     }
 });
 
-// Edit Skill
-router.post('/skills/edit/:id', upload.single('image'), async (req, res, next) => {
+router.post('/skills/edit/:id', upload.single('image'), async (req, res) => {
+    const { skill, level, category } = req.body;
+
     try {
-        const skillId = req.params.id;
-        const { skill, level, category } = req.body;
-        let categoryId;
-
-        // Find or create the category
-        const categoryDoc = await Category.findOne({ name: category });
-        if (categoryDoc) {
-            categoryId = categoryDoc._id;
-        } else {
-            const newCategory = new Category({ name: category });
-            const savedCategory = await newCategory.save();
-            categoryId = savedCategory._id;
-        }
-
-        let imageUrl = '';
-        if (req.file) {
-            imageUrl = `/uploads/${req.file.filename}`;
-        }
-
-        // Convert level to percentage for progress bar
-        const levelMapping = {
-            Beginner: 25,
-            Intermediate: 50,
-            Advanced: 75,
-            Expert: 100,
-        };
-        const levelPercentage = levelMapping[level] || 0;
+        const categoryDoc = await Category.findOneAndUpdate(
+            { name: category },
+            { name: category },
+            { upsert: true, new: true }
+        );
 
         const updateData = {
             skill,
             level,
-            levelPercentage,
-            category: categoryId,
+            levelPercentage: { Beginner: 25, Intermediate: 50, Advanced: 75, Expert: 100 }[level] || 0,
+            category: categoryDoc._id,
+            image: req.file ? `/uploads/${req.file.filename}` : undefined,
         };
-        if (imageUrl) {
-            updateData.image = imageUrl;
-        }
 
-        await Skill.findByIdAndUpdate(skillId, updateData);
-        res.redirect('/admin#skill');
+        await Skill.findByIdAndUpdate(req.params.id, updateData);
+        res.redirect('/admin#skills');
     } catch (error) {
-        next(error);
+        handleError(res, error, '/admin');
     }
 });
 
-// Delete Skill
-router.post('/skills/delete', async (req, res, next) => {
+router.post('/skills/delete', async (req, res) => {
     try {
-        const { id } = req.body;
-        await Skill.findByIdAndDelete(id);
-        res.redirect('/admin#skill');
+        await Skill.findByIdAndDelete(req.body.id);
+        res.redirect('/admin#skills');
     } catch (error) {
-        next(error);
+        handleError(res, error, '/admin#skills');
     }
 });
 
 /* =========================
-   TESTIMONIALS SECTION ROUTES
+   GENERIC DELETE HANDLER
    ========================= */
+router.post('/:type/delete', async (req, res) => {
+    const { id } = req.body;
+    const Model = {
+        testimonials: Testimonial,
+        blog: BlogPost,
+        categories: Category,
+    }[req.params.type];
 
-// Add New Testimonial
-router.post('/testimonials/add', async (req, res, next) => {
+    if (!Model) return res.status(400).send('Invalid type.');
+
     try {
-        const { content, clientName } = req.body;
-        const newTestimonial = new Testimonial({
-            content,
-            clientName,
-        });
-        await newTestimonial.save();
-        res.redirect('/admin#testimonials');
+        await Model.findByIdAndDelete(id);
+        res.redirect(`/admin#${req.params.type}`);
     } catch (error) {
-        next(error);
-    }
-});
-
-// Edit Testimonial
-router.post('/testimonials/edit/:id', async (req, res, next) => {
-    try {
-        const testimonialId = req.params.id;
-        const { content, clientName } = req.body;
-
-        await Testimonial.findByIdAndUpdate(testimonialId, { content, clientName });
-        res.redirect('/admin#testimonials');
-    } catch (error) {
-        next(error);
-    }
-});
-
-// Delete Testimonial
-router.post('/testimonials/delete', async (req, res, next) => {
-    try {
-        const { id } = req.body;
-        await Testimonial.findByIdAndDelete(id);
-        res.redirect('/admin#testimonials');
-    } catch (error) {
-        next(error);
-    }
-});
-
-/* =========================
-   BLOG SECTION ROUTES
-   ========================= */
-
-// Add New Blog Post
-router.post('/blog/add', upload.single('image'), async (req, res, next) => {
-    try {
-        const { title, description, contentUrl } = req.body;
-        let imageUrl = '';
-        if (req.file) {
-            imageUrl = `/uploads/${req.file.filename}`;
-        }
-        const newBlogPost = new BlogPost({
-            title,
-            description,
-            imageUrl,
-            contentUrl,
-        });
-        await newBlogPost.save();
-        res.redirect('/admin#blog');
-    } catch (error) {
-        next(error);
-    }
-});
-
-// Edit Blog Post
-router.post('/blog/edit/:id', upload.single('image'), async (req, res, next) => {
-    try {
-        const blogPostId = req.params.id;
-        const { title, description, contentUrl } = req.body;
-        let imageUrl = '';
-        if (req.file) {
-            imageUrl = `/uploads/${req.file.filename}`;
-        }
-
-        const updateData = { title, description, contentUrl };
-        if (imageUrl) {
-            updateData.imageUrl = imageUrl;
-        }
-
-        await BlogPost.findByIdAndUpdate(blogPostId, updateData);
-        res.redirect('/admin#blog');
-    } catch (error) {
-        next(error);
-    }
-});
-
-// Delete Blog Post
-router.post('/blog/delete', async (req, res, next) => {
-    try {
-        const { id } = req.body;
-        await BlogPost.findByIdAndDelete(id);
-        res.redirect('/admin#blog');
-    } catch (error) {
-        next(error);
-    }
-});
-
-/* =========================
-   CATEGORIES SECTION ROUTES
-   ========================= */
-
-// Add New Category
-router.post('/categories/add', async (req, res, next) => {
-    try {
-        const { name, description } = req.body;
-        const existingCategory = await Category.findOne({ name });
-        if (existingCategory) {
-            // Handle duplicate category name
-            // You can redirect with a flash message or handle as needed
-            return res.redirect('/admin#skill');
-        }
-        const newCategory = new Category({ name, description });
-        await newCategory.save();
-        res.redirect('/admin#skill');
-    } catch (error) {
-        next(error);
-    }
-});
-
-// Edit Category
-router.post('/categories/edit/:id', async (req, res, next) => {
-    try {
-        const categoryId = req.params.id;
-        const { name, description } = req.body;
-        await Category.findByIdAndUpdate(categoryId, { name, description });
-        res.redirect('/admin#skill');
-    } catch (error) {
-        next(error);
-    }
-});
-
-// Delete Category
-router.post('/categories/delete', async (req, res, next) => {
-    try {
-        const { id } = req.body;
-        // Optionally, handle cascading deletes or prevent deletion if skills are associated
-        await Category.findByIdAndDelete(id);
-        res.redirect('/admin#skill');
-    } catch (error) {
-        next(error);
+        handleError(res, error, `/admin#${req.params.type}`);
     }
 });
 

@@ -1,19 +1,231 @@
-<%- include('./partials/header') %>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin dashboard for managing portfolio content">
+    <meta name="author" content="Liaqat Ali">
+    <title>LIAQAT ALI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/layout.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
 
 <body>
-    <%- include('./partials/navbar') %>
-    <%- include('./partials/about') %>
-    <%- include('./partials/skills') %>
-    <%- include('./partials/projects') %>
-    <%- include('./partials/testimonials') %>
-    <%- include('./partials/blog') %>
-    <%- include('./partials/contact') %>
-    <%- include('./partials/footer') %>
+    <header class="titleBar">
+        <button class="titleBarBtn" aria-label="Toggle sidebar" id="sidebarToggle"><img class="arrowImg"
+                src="/images/arrow.png" alt="" srcset=""></button>
+            <div class="title">
+                <a href="/">Liaqat Ali Portfolio</a>
+            </div>
+            <div class="account-section">
+            <%if(User){%>
+                <img class="userImg" src="/images/profile.jpg" alt="Profile image">
+            <%}else{%>
+                <a href="/auth">Login</a>
+                <%}%>
+        </div>
+    </header>
 
-        <!-- Scripts -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-        <script src="scripts.js"></script>
+    <aside class="sidebar" id="sidebar">
+        <nav class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/skills">Skills</a>
+            <a href="/projects">Projects</a>
+            <a href="/testimonials">Testimonials</a>
+            <a href="/blog">Blog</a>
+        </nav>
+    </aside>
+
+    <main class="mainContents">
+        <!-- About Section -->
+        <section id="about" class="card text-center py-5" data-aos="fade-up">
+            <div class="container">
+                <h2 class="section-heading three-d-text ">About Me</h2>
+                <img src="./images/profile.jpg" alt="Profile Picture" />
+                <p class="mt-4 card">
+                <p class="lead">Hi, I’m <strong>Liaqat Ali</strong>, a <em>Computer Science student</em> at
+                    <strong>Virtual University of Pakistan</strong>, passionate about technology and problem-solving.
+                    Currently pursuing my <strong>Masters in Computer Science</strong>, I’ve developed skills in
+                    <strong>programming</strong>, <strong>data structures</strong>, <strong>networking</strong>, and
+                    <strong>software development</strong>.
+                </p>
+                <p>I have a deep interest in technology, particularly in <strong>web development</strong>,
+                    <strong>cybersecurity</strong>, and <strong>network protocols</strong>. My hands-on experience is
+                    further enhanced by certifications in:
+                </p>
+                <ul class="list-unstyled">
+                    <li><strong>Technical Support Fundamentals</strong> from Google</li>
+                    <li><strong>Introduction to TCP/IP</strong> from Yonsei University</li>
+                </ul>
+                <p>My portfolio showcases projects highlighting my growth, particularly in <strong>software
+                        development</strong>. I’m always seeking opportunities to collaborate and create impactful,
+                    innovative solutions.</p>
+                <p>If you’d like to connect, feel free to reach out. I’m excited to exchange ideas and explore new
+                    opportunities in tech.</p>
+            </div>
+        </section>
+
+        <!-- Main content goes here -->
+        <section id="skill" class="card text-center py-5 bg-light" data-aos="fade-up">
+            <div class="container">
+                <h2 class="section-heading">My Skills</h2>
+                <% if (skillsByCategory && skillsByCategory.length> 0) { %>
+                    <div class="row">
+                        <% skillsByCategory.forEach(category=> { %>
+                            <div class="col-md-4">
+                                <div class="card shadow">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <%= category._id %>
+                                        </h5> <!-- Category name -->
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Skill</th>
+                                                    <th>Level</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% category.skills.forEach(skill=> { %>
+                                                    <tr>
+                                                        <td>
+                                                            <% if (skill.image) { %>
+                                                                <img src="<%= skill.image %>" alt="<%= skill.name %>"
+                                                                    class="skill-img img-fluid">
+                                                                <% } else { %>
+                                                                    <span></span>
+                                                                    <% } %>
+                                                                        <%= skill.name %>
+                                                        </td>
+                                                        <td>
+                                                            <%= skill.level %> (<%= skill.levelPercentage %>%)
+                                                        </td>
+                                                    </tr>
+                                                    <% }); %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }); %>
+                    </div>
+                    <% } else { %>
+                        <p>No skills available.</p>
+                        <% } %>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="card text-center py-5 bg-light" data-aos="fade-up">
+            <div class="container">
+                <h2 class="section-heading">My Projects</h2>
+                <div class="row">
+                    <% if (projects.length> 0) { %> <!-- Check if there are projects -->
+                        <% projects.forEach(project=> { %>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <img src="<%= project.imageUrl %>" class="card-img-top"
+                                        alt="<%= project.title %>" />
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <%= project.title %>
+                                        </h5>
+                                        <p class="card-text">
+                                            <%= project.description %>
+                                        </p>
+                                        <a href="<%= project.contentUrl %>" class="btn btn-dark">View Project</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }); %>
+                                <% } else { %>
+                                    <p>No projects available.</p>
+                                    <% } %>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Section -->
+        <section id="blog" class="card text-center py-5">
+            <div class="container">
+                <h2 class="section-heading">My Blog</h2>
+                <div class="row">
+                    <% if (posts && posts.length> 0) { %>
+                        <% posts.forEach(post=> { %>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <img src="<%= post.imageUrl %>" class="card-img-top" alt="<%= post.title %>" />
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <%= post.title %>
+                                        </h5>
+                                        <p class="card-text">
+                                            <%= post.description %>
+                                        </p>
+                                        <a href="<%= post.contentUrl %>" class="btn btn-dark">Read More</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }); %>
+                                <% } else { %>
+                                    <p>No posts available</p>
+                                    <% } %>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="card text-center py-5 bg-light" data-aos="fade-up">
+            <div class="container">
+                <h2 class="section-heading bg-light">Testimonials</h2>
+                <div class="row">
+                    <% if (testimonials.length> 0) { %>
+                        <% testimonials.forEach(testimonial=>{%>
+                            <div class="col-md-4" data-aos="fade-up">
+                                <blockquote>
+                                    <p>
+                                        <%testimonial.testimonial%>
+                                    </p>
+                                    <footer>
+                                        <%testimonial%>
+                                    </footer>
+                                </blockquote>
+                            </div>
+                            <%})}else{%>
+                                <p> No testimonial available</p>
+                                <%}%>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Contact Section -->
+        <section id="contact" class="card text-center py-5 bg-light" data-aos="fade-up">
+            <div class="container">
+                <h2 class="section-heading">Contact Me</h2>
+                <p class="mt-4">
+                    Feel free to reach out for collaborations or just a friendly chat!
+                </p>
+                <a href="mailto:lascsofficial@outlook.com" class="btn btn-dark">Email Me</a>
+            </div>
+        </section>
+
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; <span id="currentYear"></span> Liaqat Ali. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script src="scripts.js"></script>
 </body>
 
 </html>
